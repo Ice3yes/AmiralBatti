@@ -7,30 +7,37 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Connection {
-    public DataInputStream dataInputStream;
-    public DataOutputStream dataOutputStream;
+    String ip;
+    int port;
 
-
-
-    public void waitConnection(int port) throws IOException {
-        new Thread() {
-            public void run() {
-                try {
-                    ServerSocket serverSocket = new ServerSocket(port);
-                    Socket clientSocket = serverSocket.accept();
-                    dataInputStream = new DataInputStream(clientSocket.getInputStream());
-                    dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-                } catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+    public Connection(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
     }
 
-    public void connect(String ip, int port) throws IOException {
+    public Connection(int port) {
+        this.port = port;
+    }
+
+    public void waitConnection() throws IOException {
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
+            Socket clientSocket = serverSocket.accept();
+            DataInputStream dataInputStream;
+            dataInputStream = new DataInputStream(clientSocket.getInputStream());
+            System.out.println(dataInputStream.read());
+            serverSocket.close();
+            clientSocket.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void connect(int value) throws IOException {
         Socket serverSocket = new Socket(ip, port);
+        DataOutputStream dataOutputStream;
         dataOutputStream = new DataOutputStream(serverSocket.getOutputStream());
-        dataInputStream = new DataInputStream(serverSocket.getInputStream());
+        dataOutputStream.write(value);
     }
 
 }

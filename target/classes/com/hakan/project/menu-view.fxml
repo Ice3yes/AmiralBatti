@@ -11,7 +11,7 @@
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="62.0">
          <children>
             <Label text="IP" />
-            <TextField fx:id="ipTextField" />
+            <TextField fx:id="ipTextField" text="localhost" />
          </children>
       </HBox>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">

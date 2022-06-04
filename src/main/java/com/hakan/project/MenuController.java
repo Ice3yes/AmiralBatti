@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,36 +18,41 @@ public class MenuController {
     @FXML
     private TextField portTextField;
 
-    private final Connection connection = new Connection();
+    private Connection connection;
 
     @FXML
     public void onConnectButtonClicked(ActionEvent actionEvent){
         String ip=ipTextField.getText();
         int port=Integer.parseInt(portTextField.getText());
+        connection = new Connection(ip, port);
         try {
-            connection.connect(ip,port);
-            FXMLLoader fxmlLoader = new FXMLLoader(MenuController.class.getResource("game-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 600, 635);
-            Node node = (Node) actionEvent.getSource();
-            Stage stage = (Stage) node.getScene().getWindow();
-            stage.setTitle("Amiral Battı");
-            stage.setScene(scene);
+            connection.connect(1);
+            changeScene(actionEvent);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    public void onWaitButtonClicked(){
+    public void onWaitButtonClicked(ActionEvent actionEvent){
+        String ip=ipTextField.getText();
         int port=Integer.parseInt(portTextField.getText());
+        connection = new Connection(ip, port);
         try {
-            connection.waitConnection(port);
+            connection.waitConnection();
+            changeScene(actionEvent);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void changeScene(){
-        GameController.connection=connection;
+    public void changeScene(ActionEvent actionEvent) throws IOException {
+        GameController.connection=Square.connection=connection;
+        FXMLLoader fxmlLoader = new FXMLLoader(MenuController.class.getResource("game-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 635);
+        Node node = (Node) actionEvent.getSource();
+        Stage stage = (Stage) node.getScene().getWindow();
+        stage.setTitle("Amiral Battı");
+        stage.setScene(scene);
     }
 }

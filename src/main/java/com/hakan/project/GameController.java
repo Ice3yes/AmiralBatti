@@ -4,6 +4,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 
 public class GameController {
     Square[][] board = new Square[10][10];
+    static int message;
     static IntegerProperty property = new SimpleIntegerProperty(7);
     static Connection connection;
     boolean ready=false;
@@ -20,6 +22,9 @@ public class GameController {
 
     @FXML
     private Label label;
+
+    @FXML
+    private Button finishButton;
 
     public void initialize(){
         for (int i = 0; i < 10; i++) {
@@ -34,9 +39,20 @@ public class GameController {
     @FXML
     public void onFinishButtonClicked(){
         if (property.getValue()==0){
+            Square.war=true;
             try {
-                connection.dataInputStream.readUTF();
+                connection.connect(1);
+                Thread.sleep(1000);
+                connection.waitConnection();
             } catch (IOException e) {
+                try {
+                    connection.waitConnection();
+                    Square.yourTurn=true;
+                    game();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } else {
@@ -45,5 +61,10 @@ public class GameController {
             alert.setHeaderText("Lütfen 7 tane gemi koyunuz!");
             alert.show();
         }
+    }
+
+    private void game(){
+
+
     }
 }

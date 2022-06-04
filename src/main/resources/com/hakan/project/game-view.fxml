@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="635.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hakan.project.GameController">
    <children>
       <GridPane fx:id="gridPane" prefHeight="600.0">
@@ -40,7 +39,7 @@
       <HBox alignment="CENTER" prefHeight="35.0" spacing="15.0">
          <children>
             <Label fx:id="label" />
-            <Button mnemonicParsing="false" onAction="#onFinishButtonClicked" text="Bitti" />
+            <Button fx:id="finishButton" mnemonicParsing="false" onAction="#onFinishButtonClicked" text="Bitti" />
          </children>
       </HBox>
    </children>
