@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 import java.io.IOException;
 
 public class GameController {
-    Square[][] board = new Square[10][10];
+    static Square[][] board = new Square[10][10];
     static int message;
     static IntegerProperty property = new SimpleIntegerProperty(7);
     static Connection connection;
@@ -39,19 +39,44 @@ public class GameController {
     @FXML
     public void onFinishButtonClicked(){
         if (property.getValue()==0){
+            finishButton.setDisable(true);
             Square.war=true;
             try {
                 connection.connect(1);
-                Thread.sleep(1000);
-                connection.waitConnection();
-            } catch (IOException e) {
-                try {
-                    connection.waitConnection();
-                    Square.yourTurn=true;
-                    game();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                Thread.sleep(100);
+                System.out.println("Sonradan hazır");
+
+                System.out.println("paket bekleniyor");
+                waitMessage();
+                System.out.println("Mesaj alındı: "+message);
+                Square square = getSquare(message);
+                if (square.status==Status.sea){
+                    System.out.println("deniz");
+                    square.button.setStyle("-fx-border-style: dotted;" +
+                            "-fx-border-width: 5 ;"+
+                            "-fx-background-color: lightblue;"+
+                            "-fx-border-color: yellow");
+                    square.status=Status.miss;
+                    Thread.sleep(500);
+                    connection.connect(0);
+                } else if (square.status==Status.ship){
+                    System.out.println("gemi");
+                    square.button.setStyle("-fx-border-style: dotted;" +
+                            "-fx-border-width: 5 ;"+
+                            "-fx-background-color: blue;"+
+                            "-fx-border-color: black");
+                    square.status=Status.sunken;
+                    Thread.sleep(500);
+                    connection.connect(1);
                 }
+                Thread.sleep(100);
+                Square.yourTurn=true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("ilk hazır");
+                waitMessage();
+                System.out.println(message);
+                Square.yourTurn=true;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -65,6 +90,23 @@ public class GameController {
 
     private void game(){
 
+    }
 
+    public static Square getSquare(int xy){
+        return board[xy/10][xy%10];
+    }
+
+    public void waitMessage(){
+        message=-1;
+        connection.message();
+        while (message==-1){
+            try {
+                Thread.sleep(1000);
+                System.out.println(message);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(message);
     }
 }

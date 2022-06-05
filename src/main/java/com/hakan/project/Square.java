@@ -14,7 +14,9 @@ public class Square {
     static Connection connection;
     static boolean war=false;
     static boolean yourTurn=false;
-    static int a=7;
+    static int remain=7;
+    static int point=0, enemyPoint=0;
+    static int message;
 
     public Square(){
         button = new Button();
@@ -48,20 +50,79 @@ public class Square {
                 }
             } else {
                 if(yourTurn){
-                    int x = GridPane.getColumnIndex(button);
-                    int y = GridPane.getRowIndex(button);
-                    try {
-                        connection.connect(x*10+y);
-                        yourTurn=false;
-                        Thread.sleep(1000);
-                        connection.waitConnection();
-                        yourTurn=true;
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    send();
                 }
             }
         });
+    }
+
+    public void send(){
+        yourTurn=false;
+        int x = GridPane.getColumnIndex(button);
+        int y = GridPane.getRowIndex(button);
+        try {
+            connection.connect(x*10+y);
+            System.out.println("paket gonderiliyor: "+(x*10+y));
+            Thread.sleep(500);
+            System.out.println("mesaj bekleniyor..");
+            waitMessage();
+            System.out.println("Mesaj: "+message);
+            if (message==0){
+                button.setStyle("-fx-border-style: dotted;" +
+                        "-fx-border-width: 5 ;"+
+                        "-fx-background-color: lightblue;"+
+                        "-fx-border-color: yellow");
+                status=Status.miss;
+            } else if(message==1){
+                button.setStyle("-fx-border-style: dotted;" +
+                        "-fx-border-width: 5 ;"+
+                        "-fx-background-color: blue;"+
+                        "-fx-border-color: red");
+                status=Status.sunken;
+                point++;
+            }
+            Thread.sleep(100);
+            waitMessage();
+            System.out.println("Gelen mesaj: "+message);
+            Square opponent=GameController.getSquare(message);
+            Thread.sleep(500);
+            if (opponent.status==Status.sea){
+                connection.connect(0);
+            } else if (opponent.status==Status.ship){
+                connection.connect(1);
+                enemyPoint++;
+            }
+            yourTurn=true;
+            if(enemyPoint==7){
+                war=false;
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Oyun bitti!");
+                alert.setHeaderText("Rakip kazandı");
+                alert.show();
+            } else if (point==7){
+                war=false;
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Oyun bitti!");
+                alert.setHeaderText("Sen kazandın");
+                alert.show();
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void waitMessage(){
+        message=-1;
+        connection.message();
+        while (message==-1){
+            try {
+                Thread.sleep(1000);
+                System.out.println(message);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(message);
     }
 
 }

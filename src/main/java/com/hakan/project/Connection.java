@@ -38,6 +38,26 @@ public class Connection {
         DataOutputStream dataOutputStream;
         dataOutputStream = new DataOutputStream(serverSocket.getOutputStream());
         dataOutputStream.write(value);
+        serverSocket.close();
+    }
+
+    public void message(){
+        new Thread() {
+            public void run(){
+                try {
+                    ServerSocket serverSocket = new ServerSocket(port);
+                    Socket clientSocket = serverSocket.accept();
+                    DataInputStream dataInputStream;
+                    dataInputStream = new DataInputStream(clientSocket.getInputStream());
+                    Square.message=dataInputStream.read();
+                    GameController.message=Square.message;
+                    clientSocket.close();
+                    serverSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
 }
