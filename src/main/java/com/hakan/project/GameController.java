@@ -72,7 +72,6 @@ public class GameController {
                 Thread.sleep(100);
                 Square.yourTurn=true;
             } catch (IOException e) {
-                e.printStackTrace();
                 System.out.println("ilk hazır");
                 waitMessage();
                 System.out.println(message);
